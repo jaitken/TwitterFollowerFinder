@@ -1,4 +1,4 @@
-# TwitterFollowerFinder
+# Twitter Follower Finder
 
 Using the free twitter API and tweepy library for python.
 
