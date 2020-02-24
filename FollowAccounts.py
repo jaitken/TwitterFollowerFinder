@@ -1,0 +1,34 @@
+#FollowAccounts
+#follows all accounts on the provided list
+import csv
+import tweepy
+import time
+import pandas as pd
+from datetime import datetime
+from TwitterAccessKeys import consumer_key, consumer_secret, access_token, access_token_secret
+
+
+#Set keys and tokens in TwitterAccessKeys.py 
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+api = tweepy.API(auth)
+
+thisAccount = 'aitken_7'
+FollowerList = pd.read_csv("FollowTest1.csv")
+
+#goes through list of potential followers and follow all those that are not currently following the source account
+for i in range(0, FollowerList['Follower'].size):
+	user = FollowerList['Follower'][i]
+	friendship = api.show_friendship(source_screen_name = thisAccount, target_screen_name = user)
+	following = friendship[0].followed_by
+	if(not following):
+		try:
+			api.create_friendship(user)
+		except tweepy.TweepError:
+			print('RateLimit hit, sleeping for 15 minutes')
+			now = datetime.now()
+			current_time = now.strftime("%H:%M:%S")
+			print("Current Time =", current_time)
+			time.sleep(15 * 60)
+			continue
+
